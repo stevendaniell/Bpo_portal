@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - BPO Helpdesk</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="/css/style.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-custom">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="/">
+                <i class="bi bi-headset me-2"></i>BPO Helpdesk
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto" id="navRight"></ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container dashboard-container">
+        <!-- Welcome Section -->
+        <div class="welcome-section">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h3><i class="bi bi-emoji-smile me-2"></i>Welcome, <span id="userName">User</span>!</h3>
+                    <p class="mb-0 opacity-75">Manage your support tickets from this dashboard. Create new tickets or track existing ones.</p>
+                </div>
+                <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                    <button class="btn btn-light btn-lg" data-bs-toggle="modal" data-bs-target="#createTicketModal">
+                        <i class="bi bi-plus-circle me-2"></i>New Ticket
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Row -->
+        <div class="row g-3 mb-4" id="statsRow">
+            <div class="col-md-4">
+                <div class="stat-card open">
+                    <div class="stat-number" id="openCount">0</div>
+                    <div class="stat-label"><i class="bi bi-exclamation-circle me-1"></i>Open Tickets</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stat-card pending">
+                    <div class="stat-number" id="pendingCount">0</div>
+                    <div class="stat-label"><i class="bi bi-clock me-1"></i>Pending</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stat-card resolved">
+                    <div class="stat-number" id="resolvedCount">0</div>
+                    <div class="stat-label"><i class="bi bi-check-circle me-1"></i>Resolved</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="alertBox"></div>
+
+        <!-- Filter Bar -->
+        <div class="filter-bar">
+            <div class="row align-items-center">
+                <div class="col-md-3">
+                    <h5 class="mb-0 fw-bold"><i class="bi bi-ticket-detailed me-2"></i>My Tickets</h5>
+                </div>
+                <div class="col-md-3">
+                    <select class="form-select" id="filterStatus" onchange="loadTickets()">
+                        <option value="">All Status</option>
+                        <option value="OPEN">Open</option>
+                        <option value="PENDING">Pending</option>
+                        <option value="RESOLVED">Resolved</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <select class="form-select" id="filterPriority" onchange="loadTickets()">
+                        <option value="">All Priority</option>
+                        <option value="HIGH">High</option>
+                        <option value="MEDIUM">Medium</option>
+                        <option value="LOW">Low</option>
+                    </select>
+                </div>
+                <div class="col-md-3 text-end">
+                    <button class="btn btn-outline-primary" onclick="loadTickets()">
+                        <i class="bi bi-arrow-clockwise me-1"></i>Refresh
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tickets List -->
+        <div id="ticketsList"></div>
+    </div>
+
+    <!-- Create Ticket Modal -->
+    <div class="modal fade" id="createTicketModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="bi bi-plus-circle me-2"></i>Create New Ticket</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="modalAlert"></div>
+                    <form id="createTicketForm">
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Issue Title</label>
+                            <input type="text" class="form-control" id="ticketTitle" placeholder="Brief description of your issue" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Description</label>
+                            <textarea class="form-control" id="ticketDescription" rows="4"
+                                placeholder="Provide detailed information about your issue..." required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Priority</label>
+                            <select class="form-select" id="ticketPriority">
+                                <option value="LOW">Low - General inquiry</option>
+                                <option value="MEDIUM" selected>Medium - Standard issue</option>
+                                <option value="HIGH">High - Urgent problem</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary-custom" id="createBtn">
+                            <i class="bi bi-send me-2"></i>Submit Ticket
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- View Ticket Modal -->
+    <div class="modal fade" id="viewTicketModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="bi bi-eye me-2"></i>Ticket Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="ticketDetailBody">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/app.js"></script>
+    <script>
+        if (!api.requireAuth()) throw new Error('Not authenticated');
+
+        const user = api.getUser();
+        document.getElementById('userName').textContent = user.fullName;
+
+        // Load tickets
+        async function loadTickets() {
+            try {
+                let url = '/api/tickets?';
+                const status = document.getElementById('filterStatus').value;
+                const priority = document.getElementById('filterPriority').value;
+                if (status) url += `status=${status}&`;
+                if (priority) url += `priority=${priority}&`;
+
+                const tickets = await api.get(url);
+                renderTickets(tickets);
+                updateStats(tickets);
+            } catch (err) {
+                showAlert('alertBox', 'Failed to load tickets: ' + err.message);
+            }
+        }
+
+        function updateStats(tickets) {
+            const open = tickets.filter(t => t.status === 'OPEN').length;
+            const pending = tickets.filter(t => t.status === 'PENDING').length;
+            const resolved = tickets.filter(t => t.status === 'RESOLVED').length;
+            document.getElementById('openCount').textContent = open;
+            document.getElementById('pendingCount').textContent = pending;
+            document.getElementById('resolvedCount').textContent = resolved;
+        }
+
+        function renderTickets(tickets) {
+            const container = document.getElementById('ticketsList');
+            if (tickets.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="bi bi-inbox"></i>
+                        <h4>No tickets found</h4>
+                        <p>Create your first ticket to get started!</p>
+                    </div>`;
+                return;
+            }
+
+            container.innerHTML = tickets.map(t => `
+                <div class="ticket-card priority-${t.priority}">
+                    <div class="row align-items-center">
+                        <div class="col-md-5">
+                            <div class="ticket-title">${t.title}</div>
+                            <div class="ticket-meta mt-1">
+                                <i class="bi bi-calendar3 me-1"></i>${t.createdAt}
+                                &nbsp;&middot;&nbsp;
+                                <i class="bi bi-person me-1"></i>${t.assignedAgentName}
+                            </div>
+                        </div>
+                        <div class="col-md-3 mt-2 mt-md-0">
+                            ${statusBadge(t.status)}
+                            &nbsp;
+                            ${priorityBadge(t.priority)}
+                        </div>
+                        <div class="col-md-2 mt-2 mt-md-0">
+                            <small class="text-muted">#${t.id}</small>
+                        </div>
+                        <div class="col-md-2 text-end mt-2 mt-md-0">
+                            <button class="btn btn-sm btn-outline-primary" onclick="viewTicket(${t.id})">
+                                <i class="bi bi-eye me-1"></i>View
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function viewTicket(id) {
+            try {
+                const ticket = await api.get(`/api/tickets/${id}`);
+                document.getElementById('ticketDetailBody').innerHTML = `
+                    <div class="row">
+                        <div class="col-md-8">
+                            <h4>${ticket.title}</h4>
+                            <p class="text-muted">${ticket.description}</p>
+                            ${ticket.resolutionNotes ? `<div class="alert alert-success"><strong>Resolution:</strong> ${ticket.resolutionNotes}</div>` : ''}
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card">
+                                <div class="card-body">
+                                    <p><strong>Status:</strong> ${statusBadge(ticket.status)}</p>
+                                    <p><strong>Priority:</strong> ${priorityBadge(ticket.priority)}</p>
+                                    <p><strong>Assigned To:</strong><br>${ticket.assignedAgentName}</p>
+                                    <p><strong>Created:</strong><br>${ticket.createdAt}</p>
+                                    <p><strong>Updated:</strong><br>${ticket.updatedAt}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>`;
+                new bootstrap.Modal(document.getElementById('viewTicketModal')).show();
+            } catch (err) {
+                showAlert('alertBox', 'Failed to load ticket details');
+            }
+        }
+
+        // Create Ticket
+        document.getElementById('createTicketForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('createBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Submitting...';
+
+            try {
+                await api.post('/api/tickets', {
+                    title: document.getElementById('ticketTitle').value,
+                    description: document.getElementById('ticketDescription').value,
+                    priority: document.getElementById('ticketPriority').value
+                });
+                bootstrap.Modal.getInstance(document.getElementById('createTicketModal')).hide();
+                document.getElementById('createTicketForm').reset();
+                showAlert('alertBox', 'Ticket created successfully!', 'success');
+                loadTickets();
+            } catch (err) {
+                showAlert('modalAlert', err.message || 'Failed to create ticket');
+            }
+
+            btn.disabled = false;
+            btn.innerHTML = '<i class="bi bi-send me-2"></i>Submit Ticket';
+        });
+
+        // Initial load
+        loadTickets();
+    </script>
+</body>
+</html>

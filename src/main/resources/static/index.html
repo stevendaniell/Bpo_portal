@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BPO Helpdesk - Customer Service Portal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="/css/style.css" rel="stylesheet">
+    <style>
+        .hero-section {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 50%;
+            top: -200px;
+            right: -100px;
+        }
+        .hero-section::after {
+            content: '';
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 50%;
+            bottom: -100px;
+            left: -100px;
+        }
+        .hero-content { position: relative; z-index: 1; }
+        .hero-title { font-size: 3.5rem; font-weight: 800; color: #fff; line-height: 1.2; }
+        .hero-subtitle { font-size: 1.25rem; color: rgba(255,255,255,0.85); margin: 20px 0 40px; }
+        .feature-card {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 30px;
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.15);
+            transition: transform 0.3s;
+        }
+        .feature-card:hover { transform: translateY(-5px); }
+        .feature-card i { font-size: 2.5rem; margin-bottom: 15px; }
+        .feature-card h5 { font-weight: 600; }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-custom fixed-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="/">
+                <i class="bi bi-headset me-2"></i>BPO Helpdesk
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto" id="navRight"></ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container hero-content">
+            <div class="row align-items-center">
+                <div class="col-lg-6 mb-5 mb-lg-0">
+                    <h1 class="hero-title">BPO Customer<br>Service Portal</h1>
+                    <p class="hero-subtitle">
+                        Streamline your support operations with our powerful helpdesk system.
+                        Raise tickets, track issues, and resolve problems efficiently.
+                    </p>
+                    <div class="d-flex gap-3">
+                        <a href="/register.html" class="btn btn-light btn-lg px-4 fw-semibold">
+                            <i class="bi bi-rocket-takeoff me-2"></i>Get Started
+                        </a>
+                        <a href="/login.html" class="btn btn-outline-light btn-lg px-4">
+                            <i class="bi bi-box-arrow-in-right me-2"></i>Login
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="feature-card">
+                                <i class="bi bi-ticket-detailed"></i>
+                                <h5>Ticket Management</h5>
+                                <p class="mb-0 small opacity-75">Create, track, and manage support tickets with ease</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="feature-card">
+                                <i class="bi bi-people"></i>
+                                <h5>Role-Based Access</h5>
+                                <p class="mb-0 small opacity-75">Customer, Agent, and Admin roles with specific permissions</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="feature-card">
+                                <i class="bi bi-graph-up-arrow"></i>
+                                <h5>Live Dashboard</h5>
+                                <p class="mb-0 small opacity-75">Real-time stats and analytics for your support team</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="feature-card">
+                                <i class="bi bi-shield-check"></i>
+                                <h5>Secure & Fast</h5>
+                                <p class="mb-0 small opacity-75">JWT authentication with encrypted data handling</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/app.js"></script>
+    <script>
+        // Redirect logged-in users to dashboard
+        if (api.isLoggedIn()) {
+            document.querySelector('.hero-subtitle').textContent = 'Welcome back! Head to your dashboard to manage tickets.';
+        }
+    </script>
+</body>
+</html>
